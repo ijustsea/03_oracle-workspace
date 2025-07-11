@@ -263,3 +263,106 @@ WHERE EMP_NAME LIKE '%하%' AND SALARY >= 2400000;
 SELECT DEPT_ID, DEPT_TITLE
 FROM DEPARTMENT
 WHERE DEPT_TITLE LIKE '해외%';
+-------------------------------------------------------------------
+/*
+    <IS NULL, IS NOT NULL>
+    컬럼값이 NULL있을경우 NULL값비교에 사용되는 연산자들
+*/
+--보너가 없는 사원들.
+SELECT EMP_ID, EMP_NAME, SALARY, BONUS
+FROM EMPLOYEE
+WHERE BONUS IS NULL;
+--보너스 받는 사원들. 
+SELECT EMP_ID, EMP_NAME, SALARY, BONUS
+FROM EMPLOYEE
+WHERE BONUS IS NOT NULL;
+
+--사수가 없는 사원들
+SELECT EMP_NAME, EMP_NO, MANAGER_ID, DEPT_CODE
+FROM EMPLOYEE
+WHERE MANAGER_ID IS NULL;
+--부서배치안된 사원들
+SELECT EMP_NAME, BONUS, DEPT_CODE
+FROM EMPLOYEE
+WHERE DEPT_CODE IS NULL AND BONUS IS NOT NULL;
+
+/*
+    <IN>
+    비교대상컬럼 값이 내가 제시한 목록중에 일치하는 값이 있는지
+    
+    표현법
+    비교대상 컬럼 IN('값1', '값2', '값3', ....)
+*/
+SELECT EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+WHERE DEPT_CODE IN ('D6','D8','D5');
+
+-------------------------------------------------------------------
+--연산자 우선순위
+/*
+    <연산자 우선순위>
+    0. () 괄호
+    1. 산술연산자
+    2. 연결연산자  ||
+    3. 비교연산자 
+    4. IS절, LIKE절, IN절
+    5. BETWEEN
+    6. NOT
+    7. AND
+    8. OR
+*/
+
+--직급 코드 J7 J2 인사원들중 급ㅇ여 200마넌인 사원들 모든 컬럼조회
+SELECT *
+FROM EMPLOYEE
+--WHERE (JOB_CODE ='J7' OR JOB_CODE= 'J2') AND SALARY >= 2000000; 
+--OR의 우선순위가 AND보다 낮아서 괄호 하지않으면 원하지 않게 실행됨.
+WHERE JOB_CODE IN('J7', 'J2') AND SALARY >= 2000000;
+
+SELECT EMP_NAME, MANAGER_ID, DEPT_CODE
+FROM EMPLOYEE
+WHERE MANAGER_ID IS NULL AND DEPT_CODE IS NULL;
+
+SELECT EMP_ID, EMP_NAME, SALARY, BONUS
+FROM EMPLOYEE
+WHERE BONUS IS NULL AND SALARY*12 >=30000000;
+
+SELECT EMP_ID, EMP_NAME, HIRE_DATE, DEPT_CODE
+FROM EMPLOYEE
+WHERE HIRE_DATE>='95/01/01' AND DEPT_CODE IS NOT NULL;
+
+SELECT EMP_ID, EMP_NAME, SALARY, HIRE_DATE, BONUS
+FROM EMPLOYEE
+WHERE (SALARY BETWEEN 2000000 AND 5000000 ) AND HIRE_DATE>='01/01/01' AND BONUS IS NULL;
+
+SELECT EMP_ID AS "사번", EMP_NAME AS "사원명" , SALARY AS "급여", (SALARY +SALARY*BONUS)*12 AS "보너스포함연봉"
+FROM EMPLOYEE
+WHERE (SALARY +SALARY*BONUS)*12 IS NOT NULL AND EMP_NAME LIKE '%하%';
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+SELECT EMP_ID, EMP_NAME, SALARY--3
+FROM EMPLOYEE--1
+WHERE DEPT_CODE IS NULL;--2
+--이후 데이터 정렬하는방법, 정렬은 데이터뽑고 마지막 아래에 한다. 가장 마지막에 실행
+
+/*
+    <ORDER BY절>
+    표현법
+    SELECT 조회할 컬럼, 컬럼....
+    FROM 조회하고자하는 테이블명
+    WHERE 조건식 
+    ORDER BY 정렬기준컬럼(컬럼명|별칭|컬럼순번가능) [ASC|DESC] [NULLS FIRST| NULLS LAST]
+    ASC 오름차순,기본값, DESC 내림차순
+    NULLS FIRST NULL맨앞 (DESC 기본값), NULL LAST NULL맨뒤 (ASC 기본값)
+*/
+
+SELECT *
+FROM EMPLOYEE
+--ORDER BY BONUS ASC NULLS FIRST;
+ORDER BY BONUS DESC, SALARY ASC;
+
+SELECT EMP_NAME, SALARY*12 AS "연봉"
+FROM EMPLOYEE
+--ORDER BY 연봉 DESC;--실행순서떄문에 사용가능 가장마지막에 실행되서.
+ORDER BY 1 ;
