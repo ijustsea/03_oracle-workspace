@@ -223,3 +223,82 @@ FROM EMPLOYEE
 WHERE (DEPT_CODE, SALARY) IN (SELECT DEPT_CODE, MAX(SALARY)
                             FROM EMPLOYEE
                             GROUP BY DEPT_CODE); --한줄아닐 IN 써야함 =불가
+
+/*
+인라인 뷰 (INLINE-VIEW)
+서브쿼리 수행한 결과를 마치 테이블 처럼 사용
+*/
+--사원들의 사번, 이름, 보너스 포함 연봉(별칭부여 : 연봉), 부서코드 조회
+
+SELECT EMP_ID, EMP_NAME, (SALARY+SALARY*NVL(BONUS,0))*12 AS "연봉", DEPT_CODE
+FROM EMPLOYEE
+WHERE (SALARY+SALARY*NVL(BONUS,0))*12 >=30000000;--WHERE절이 SELECT보다 실행순서가 빨라서 연봉이라고 WHERE작성못함.
+
+SELECT EMP_ID, EMP_NAME, (SALARY+SALARY*NVL(BONUS,0))*12 AS "연봉", DEPT_CODE
+FROM EMPLOYEE;
+--이걸 마치 있던 테이블 마냥 사용할수있음 ~ 인라인뷰                            
+
+SELECT * --인라인뷰요소가 아닌 칼럼을 셀렉절에호출하면 에러
+FROM (SELECT EMP_ID, EMP_NAME, (SALARY+SALARY*NVL(BONUS,0))*12 AS "연봉", DEPT_CODE
+        FROM EMPLOYEE)
+WHERE  연봉 >=40000000;
+--TOP-N 분석에서 많이 인라인뷰 사용(상위 몇개만 보여주고싶을때)=> BEST 상품 등
+--전직원중 급여가 가장 높은 상위 5명 조회
+--ROWNUM: 오라클 내부제공, 조회된 순서대로 1번부터 순번 부여
+SELECT EMP_NAME, SALARY--~ 이떄 선분이 부여됨, 정렬도 하기전에 순서부여
+FROM EMPLOYEE
+ORDER BY SALARY DESC;
+
+SELECT ROWNUM, EMP_NAME,SALARY
+FROM (SELECT EMP_NAME, SALARY, DEPT_CODE FROM EMPLOYEE ORDER BY SALARY DESC)
+WHERE ROWNUM <= 5;
+
+SELECT ROWNUM, A.*
+FROM (SELECT EMP_NAME, SALARY, DEPT_CODE FROM EMPLOYEE ORDER BY SALARY DESC) A
+WHERE ROWNUM <= 5;
+--최근 고용된 5명 사원 조회
+SELECT EMP_NAME, SALARY, HIRE_DATE
+FROM EMPLOYEE
+ORDER BY HIRE_DATE;
+
+SELECT ROWNUM, D.*
+FROM (SELECT EMP_NAME, SALARY, HIRE_DATE 
+        FROM EMPLOYEE
+        ORDER BY HIRE_DATE DESC) D
+WHERE ROWNUM <=5;
+--각 부서별 평균급여 높은 부서조회 ~ 그룹별이니 그룹바이
+SELECT DEPT_CODE, AVG(SALARY)
+FROM EMPLOYEE
+WHERE DEPT_CODE IS NOT NULL
+GROUP BY DEPT_CODE;
+
+SELECT ROWNUM, S.*
+FROM (SELECT DEPT_CODE, ROUND( AVG(SALARY))
+        FROM EMPLOYEE
+        WHERE DEPT_CODE IS NOT NULL
+        GROUP BY DEPT_CODE
+        ORDER BY AVG(SALARY) DESC) S
+WHERE ROWNUM <=3;
+
+/*
+순위매기는 함수 (WINDOW FUNCTION)
+RANK() OVER (정렬기준): 동일하 순위 이후  등수를 동일한 인원수만큼 건너뜀
+EX) 공동 1위 3명이며 그다음 순위 4위 1, 1, 1, 4
+DENSE_RANK() OVER (정렬기준) : 동일한 순위 가 있따고 해도 그다음 수를 무조건 1씩 증가시킴
+EX) 공동 1위 3명이며 그다음 순위 2위   1, 1, 1, 2
+
+두함수는 SELECT절에서만 사용가능 
+*/
+
+SELECT EMP_NAME, SALARY, RANK() OVER (ORDER BY SALARY DESC) AS "순위" 
+FROM EMPLOYEE;--조회딘 행수를 마지막 행수가 같음
+
+SELECT EMP_NAME, SALARY, DENSE_RANK() OVER (ORDER BY SALARY DESC) AS "순위" 
+FROM EMPLOYEE;
+
+SELECT *
+FROM (SELECT EMP_NAME, SALARY, DENSE_RANK() OVER (ORDER BY SALARY DESC) AS "순위" 
+        FROM EMPLOYEE)
+WHERE 순위 <=5 ;
+
+                            
