@@ -248,20 +248,65 @@ ORDER BY PRICE DESC;
 /* D조 */
 --D-1. 진라면을 가장 많이 구매한 회원을 구매금액이 높은 순으로 회원아이디와 총 진라면 구매금액을 보여주세요.(조하연)
 -- 							ㄴ 서브쿼리 없이 조인만 사용
-
+SELECT CUSTOMID, PRICE*QUANTITY
+FROM TBL_BUY
+JOIN TBl_PRODUCT USING(PCODE)
+WHERE PNAME LIKE '%진라면%'
+GROUP BY CUSTOMID,PRICE*QUANTITY
+ORDER BY PRICE*QUANTITY DESC ;
 
  
 --D-2. 판매 갯수가 가장 많은 순서로 상품 을 정렬하고 총 팔린 금액을 출력하시오.(한진만)
 -- 	   판매 개수가 같으면 상품 코드 순서로 정렬합니다.			ㄴ 동등 조인으로 조회
 
-
+SELECT PNAME, SUM(QUANTITY*PRICE)
+FROM TBL_PRODUCT P, TBL_BUY B
+WHERE P.PCODE = B.PCODE
+GROUP BY PNAME, P.PCODE
+ORDER BY SUM(QUANTITY) DESC, P.PCODE ASC;
 
 
 --D-3. 진라면을 구매한 고객들의 평균 나이를 제품코드(PCODE)와 함께출력해 주세요.(황병훈)
-
+SELECT PCODE, AGE
+FROM TBL_BUY
+JOIN TBl_PRODUCT USING(PCODE)
+JOIN TBL_CUSTOM ON (CUSTOMID= CUSTOM_ID)
+WHERE PNAME LIKE '%진라면%'
+ORDER BY PRICE*QUANTITY DESC ;
 
 
 
 --D-4. 30세 미만 회원별 구매금액을 구하고 회원으로 그룹바이해서 구매금액 합계가 큰 순으로 정렬(조지수)
 -- 						ㄴ 3개의 테이블 조인
+
+SELECT AGE, SUM(QUANTITY*PRICE)
+FROM TBL_BUY
+JOIN TBL_CUSTOM ON (CUSTOM_ID = CUSTOMID)
+JOIN TBl_PRODUCT USING(PCODE)
+WHERE AGE <=30
+GROUP BY AGE
+ORDER BY SUM(QUANTITY*PRICE) DESC ;
+
+--내가 만든 쿠키 아닌 문제
+
+--이메일을 daum으로 쓰지않는  사람들의 평균 나이를 구하시오  ( 나이가 0인 경우 제외)
+SELECT ROUND(AVG(AGE),1)
+FROM TBL_CUSTOM 
+WHERE not EMAIL LIKE '%daum%' 
+AND AGE ^=0;
+
+--홍길동씨와 박모모씨가 사실 연인관계라고 한다 이 커플의 구매 총액은 ?
+
+SELECT SUM(QUANTITY * PRICE) AS 커플총구매액
+FROM TBL_BUY
+JOIN TBL_CUSTOM ON (CUSTOM_ID = CUSTOMID)
+JOIN TBL_PRODUCT USING(PCODE)
+WHERE NAME IN ('홍길동', '박모모');
+
+
+
+
+
+
+
 
