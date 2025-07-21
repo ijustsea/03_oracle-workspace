@@ -5,7 +5,7 @@
 --ALTER TABLE 테이블명 변경할 내용;
 
 --변경할 내용 
---1)컬럼 추가/수정/삭                  제
+--1)컬럼 추가/수정/삭 제
 --1.컬럼추가(ADD) : ADD 컬럼명 자료형 디폴트 제약조건 
 --DEPT_COPY에 CNAME 컬럼 추가
 ALTER TABLE DEPT_COPY ADD CNAME VARCHAR(20);
@@ -48,18 +48,16 @@ ALTER TABLE DEPT_COPY2 DROP COLUMN LOCATION_ID;
 --2)제약조건 추가/삭제 --> 수정은 불가(수정하고자한다면 삭제후 새로 추가)
 --2-1 제약조건 추가
    -- PRIMARY KEY : ADD PRIMARY KEY(칼럼명)
-  --  FOREIGN KEY : ADD FOREIGN KEY(칼럼명)  REFFERENCES 참조할테이블
+   -- FOREIGN KEY : ADD FOREIGN KEY(칼럼명)  REFFERENCES 참조할테이블
    -- UNIQUE : ADD UNIQUE(칼러명)    
- --   CHECK : ADD CHEKCK(칼럼에대한 조건)
-  --  NOT NUL : MODIFY  컬렴명  NULL|NOTNULL 
-
+   -- CHECK : ADD CHEKCK(칼럼에대한 조건)
+   -- NOT NUL : MODIFY  컬렴명  NULL|NOTNULL 
    -- 제약조건 지정하고자한다면 CONSTRAINT 설정하면됨
  
 ALTER TABLE DEPT_COPY
     ADD CONSTRAINT DCOPY_PK PRIMARY KEY(DEPT_ID)
     ADD CONSTRAINT DCOPY_UQ UNIQUE(DEPT_TITLE)
-    MODIFY LNAME CONSTRAINT DCOPY_NN NOT NULL;
-    
+    MODIFY LNAME CONSTRAINT DCOPY_NN NOT NULL;    
 
 --2-2 제약 조건 삭제 : DROP CONSTRAINT 제약조건명
 --NOT NULL은 삭제가 안되서 MODIFY 로 지워야함
@@ -80,7 +78,6 @@ ALTER TABLE DEPT_COPY RENAME CONSTRAINT SYS_C007194 TO DOCOPY_LID_NN;
 ------------------------------------------------------------------------
 
 --<DROP> : 객체를 삭제
---DROP
 
 DROP TABLE DEPT_TEST;
 
