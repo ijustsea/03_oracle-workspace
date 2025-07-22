@@ -418,6 +418,8 @@ EXCEPTION
     -TOO_MANY_RESULT : SELECT 결과가 여러행인 경우
     -ZERO_DIVIDE : 0으로 나누려 할때 
     -DUP_VAL_ON_INDEX : UNIQUE 제약조건 위배 될떄
+    
+    => 한번에 하려면 others
 */
 --ZERO_DIVIDE
 DECLARE 
@@ -460,4 +462,16 @@ EXCEPTION
 
 END;
 /
+
+SELECT SALARY
+FROM EMPLOYEE;
+
+SELECT A.*
+FROM (SELECT SALARY
+    FROM EMPLOYEE
+    WHERE SALARY IS NOT NULL
+    ORDER BY SALARY DESC 
+    
+    ) A
+WHERE ROWNUM <=5;
 
